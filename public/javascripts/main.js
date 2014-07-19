@@ -1,4 +1,4 @@
-var socket = io('http://df49858.ngrok.com:80');
+var socket = io('/');
 
 var phoneProps = {
   'rotX': 0,
@@ -31,4 +31,4 @@ socket.on('update rotation', function(data) {
   phoneProps.rotX = data.x;
   phoneProps.rotY = data.y;
   phoneProps.rotZ = data.z;
-}); 
+});
