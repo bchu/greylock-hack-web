@@ -22,7 +22,7 @@ socket.on('update screencast', function(file){
   image.onload = function() {
     screen.map = new THREE.Texture(image);
     screen.map.needsUpdate = true;
-  }
+  };
 });
 
 socket.on('update position', function(data) {
