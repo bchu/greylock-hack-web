@@ -43,20 +43,22 @@ var scene = new THREE.Scene();
 var ambient = new THREE.AmbientLight( 0x404040 );
 scene.add( ambient );
 var frontLight = new THREE.DirectionalLight( 0xffffff, 1 );
-frontLight.position.set( 0, 0, 1 );
+frontLight.position.set( 0, 0, 100 );
 frontLight.castShadow = true;
 frontLight.shadowDarkness = 0.5;
 // frontLight.shadowCameraVisible = true;
 scene.add( frontLight );
 
 var topLight = new THREE.DirectionalLight( 0xffffff, 1 );
-topLight.position.set( 0, 1, 0 );
+topLight.position.set( 0, 1000, 0 );
 topLight.castShadow = true;
 topLight.shadowDarkness = 0.5;
 // topLight.shadowCameraVisible = true;
 scene.add(topLight);
 
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 3000);
+camera.position.set(0,800,1500);
+camera.rotation.x = -Math.PI/6;
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColorHex(0xffffff, 1);
@@ -65,7 +67,6 @@ renderer.shadowMapSoft = true;
 document.body.appendChild(renderer.domElement);
 var phone;
 var screen;
-camera.position.z = 1000;
 
 
 /* Load iphone model */
@@ -88,9 +89,12 @@ loader.load('/models/iphone-model.json', function (geometry, materials) {
 });
 
 
-var plane = new THREE.Mesh(new THREE.PlaneGeometry(300, 1), new THREE.MeshBasicMaterial( { color: 0xffffff } ));
-plane.position.y = -10;
-plane.rotation.z  = -Math.PI / 2;
+var planeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+planeMaterial.ambient = planeMaterial.color;
+var plane = new THREE.Mesh(new THREE.PlaneGeometry(1500, 1500), planeMaterial);
+plane.rotation.x  = -Math.PI / 2;
+plane.position.set(0, -800, 500);
+plane.scale.set(100,100,100);
 plane.receiveShadow = true;
 scene.add(plane);
 
