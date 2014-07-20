@@ -14,8 +14,16 @@ socket.on('update rotation', function(data) {
   phoneProps.quaternion = data.quaternion;
 });
 
+var counter = 0;
 socket.on('update screencast', function(file){
-  console.log(file);
+  if (counter <= 0) {
+    console.log(file.byteLength);
+    var imageBlob = new Blob([file], {type: 'image/jpeg'});
+    var image = new Image();
+    image.src = URL.createObjectURL(imageBlob);
+    document.body.appendChild(image);
+    counter++;
+  }
 });
 
 var scene = new THREE.Scene();

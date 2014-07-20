@@ -10,10 +10,14 @@ router.post('/update', function(req, res) {
 
 router.post('/screencast', function(req, res) {
   req.pipe(req.busboy);
-  req.busboy.on('file', function (fieldname, file, filename) {
-    console.log(filename);
-    console.log(typeof file);
-    socketServer.updateScreencast(file);
+  req.busboy.on('file', function (fieldname, filestream, filename) {
+    filestream.on('data', function(chunk) {
+      socketServer.updateScreencast(chunk); 
+    });
+
+    filestream.on('end', function() {
+      console.log('end');
+    });
   });
   res.end();
 });
