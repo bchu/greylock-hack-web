@@ -32,11 +32,17 @@ socket.on('update screencast', function(file){
 var scene = new THREE.Scene();
 var ambient = new THREE.AmbientLight( 0x404040 );
 scene.add( ambient );
-var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-directionalLight.position.set( 0, 0, 1 );
-directionalLight.castShadow = true;
-directionalLight.shadowDarkness = 0.5;
-scene.add( directionalLight );
+var frontLight = new THREE.DirectionalLight( 0xffffff, 1 );
+frontLight.position.set( 0, 0, 1 );
+frontLight.castShadow = true;
+frontLight.shadowDarkness = 0.5;
+scene.add( frontLight );
+
+var topLight = new THREE.DirectionalLight( 0xffffff, 1 );
+topLight.position.set( 0, 1, 0 );
+topLight.castShadow = true;
+topLight.shadowDarkness = 0.5;
+scene.add(topLight);
 
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 3000);
 var renderer = new THREE.WebGLRenderer();
