@@ -16,10 +16,10 @@ socket.on('update rotation', function(data) {
 
 var scene = new THREE.Scene();
 
-var ambient = new THREE.AmbientLight( 0x101010 );
+var ambient = new THREE.AmbientLight( 0x404040 );
 scene.add( ambient );
-var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-directionalLight.position.set( 0.5, 2, 1 ).normalize();
+var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+directionalLight.position.set( 0, 0, 1 );
 scene.add( directionalLight );
 
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 3000);
