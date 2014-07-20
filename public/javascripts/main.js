@@ -20,18 +20,10 @@ socket.on('update screencast', function(file){
   var imageBlob = new Blob([file], {type: 'image/jpeg'});
   var image = new Image(320, 568);
   image.src = URL.createObjectURL(imageBlob);
-  if (counter <= 0) {
-    var canvas = document.createElement('canvas');
-    canvas.width = 328;
-    canvas.height = 568;
-    var ctx = canvas.getContext('2d');
-    image.onload = function() {
-      ctx.drawImage(image, 0, 0);
-      document.body.appendChild(canvas);
-      screen.map = new THREE.Texture(canvas);
-      screen.map.needsUpdate = true;
-    }
-    counter++;
+  image.onload = function() {
+    document.body.appendChild(canvas);
+    screen.map = new THREE.Texture(image);
+    screen.map.needsUpdate = true;
   }
   //screen.map = new THREE.Texture(THREE.ImageUtils.getNormalMap(image));
 });
