@@ -1,1 +1,0 @@
-./ngrok -config tunnels start

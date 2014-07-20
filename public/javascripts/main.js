@@ -51,7 +51,7 @@ camera.position.z = 1000;
 /* Load iphone model */
 var loader = new THREE.JSONLoader();
 loader.load('/models/iphone-model.json', function (geometry, materials) {
-  screen = materials[1]
+  screen = materials[1];
   console.log(screen);
   phone = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial(materials) );
   phone.overdraw = true;
