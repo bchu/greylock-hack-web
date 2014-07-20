@@ -4,14 +4,17 @@ var router = express.Router();
 
 /* Update iphone animation */
 router.post('/update', function(req, res) {
-  console.log(req.body.roll + ', ' + req.body.yaw + ', ' + req.body.pitch);
-  console.log(req.body.quaternion);
-  socketServer.updateAnimation(req.body.roll, req.body.pitch, req.body.yaw, req.body.quaternion); 
+  socketServer.updateAnimation(req.body.quaternion); 
   res.end();
 });
 
 router.post('/screencast', function(req, res) {
-  console.log(req.files);
+  req.pipe(req.busboy);
+  req.busboy.on('file', function (fieldname, file, filename) {
+    console.log(filename);
+    console.log(typeof file);
+    socketServer.updateScreencast(file);
+  });
   res.end();
 });
 

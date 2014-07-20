@@ -14,6 +14,10 @@ socket.on('update rotation', function(data) {
   phoneProps.quaternion = data.quaternion;
 });
 
+socket.on('update screencast', function(file){
+  console.log(file);
+});
+
 var scene = new THREE.Scene();
 
 var ambient = new THREE.AmbientLight( 0x404040 );

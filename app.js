@@ -5,6 +5,7 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var busboy = require('connect-busboy');
 
 var routes = require('./routes/index');
 var socketServer = require('./lib/socket-server');
@@ -19,8 +20,9 @@ app.set('view engine', 'jade');
 
 app.use(favicon());
 app.use(logger('dev'));
+app.use(busboy());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+//app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
