@@ -11,7 +11,7 @@ var routes = require('./routes/index');
 var socketServer = require('./lib/socket-server');
 
 var app = express();
-var port = (app.get('env') === 'development') ? 3000 : 80;
+var port = process.env.PORT || 3000;
 var server = http.Server(app).listen(port, '127.0.0.1');
 socketServer.listen(server, port);
 

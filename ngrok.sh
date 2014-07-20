@@ -1,1 +1,1 @@
-./ngrok -config tunnels 3000
+./ngrok -config tunnels -proto=tcp 3000
