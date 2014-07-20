@@ -20,12 +20,15 @@ var ambient = new THREE.AmbientLight( 0x404040 );
 scene.add( ambient );
 var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
 directionalLight.position.set( 0, 0, 1 );
+directionalLight.castShadow = true;
+directionalLight.shadowDarkness = 0.5;
 scene.add( directionalLight );
 
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 3000);
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColorHex(0xffffff, 1);
+renderer.shadowMapEnabled = true;
 document.body.appendChild(renderer.domElement);
 var phone;
 camera.position.z = 1000;
@@ -36,6 +39,8 @@ loader.load('/models/iphone-model.json', function (geometry, materials) {
   phone.overdraw = true;
   scene.add(phone);
 });
+
+canvas = document.createElement('canvas');
 
 var offset = new THREE.Quaternion();
 offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );

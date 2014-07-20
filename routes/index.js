@@ -10,6 +10,11 @@ router.post('/update', function(req, res) {
   res.end();
 });
 
+router.post('/screencast', function(req, res) {
+  console.log(req.files);
+  res.end();
+});
+
 /* GET home page. */
 router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
