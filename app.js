@@ -11,7 +11,7 @@ var routes = require('./routes/index');
 var socketServer = require('./lib/socket-server');
 
 var app = express();
-var server = http.createServer(app).listen('3000', '127.0.0.1');
+var server = http.Server(app).listen('3000', '127.0.0.1');
 socketServer.listen(server);
 
 // view engine setup
