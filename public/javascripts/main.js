@@ -80,6 +80,7 @@ var setCameraSphere = function(longitude, latitude, radius) {
   camera.applyMatrix(matrix);
 };
 
+var origX = 0, origY = 0, origZ = 1300;
 var prevX = 0;
 var prevY = 0;//Math.PI/18;
 var prevZ = 1300;
@@ -105,13 +106,22 @@ socket.on('update', function(data) {
       // console.log('x');
       prevX += 5 * x;
     }
+    else {
+      prevX += (origX - prevX) / 8;
+    }
     if (Math.abs(y) > 1) {
       // console.log('y');
       prevY += 5 * y;
     }
+    else {
+      prevY += (origY - prevY) / 8;
+    }
     if (Math.abs(z) > 1.5) {
       // console.log('z');
-      prevZ += 5 * z;
+      prevZ += -5 * z;
+    }
+    else {
+      prevZ += (origZ - prevZ) / 8;
     }
     prevX = Math.max(-500, Math.min(500, prevX));
     prevY = Math.max(-500, Math.min(500, prevY));
