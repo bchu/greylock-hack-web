@@ -1,1 +1,8 @@
 auth_token: WeKSBk2pWActkLrAhadI
+tunnels:
+  http:
+    proto:
+      tcp: 3000
+  ws:
+    proto:
+      tcp: 2000

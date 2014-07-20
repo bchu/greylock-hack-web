@@ -1,5 +1,3 @@
-var port = process.env.PORT || 3000;
-console.log('Connect on port: ', port);
 var http = require('http');
 var express = require('express');
 var path = require('path');
@@ -13,6 +11,8 @@ var routes = require('./routes/index');
 var socketServer = require('./lib/socket-server');
 
 var app = express();
+var port = process.env.PORT || 3000;
+console.log('Connect on port: ', port);
 var server = http.Server(app).listen(port, '127.0.0.1');
 socketServer.listen(server, port);
 

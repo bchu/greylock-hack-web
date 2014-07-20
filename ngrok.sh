@@ -1,1 +1,1 @@
-./ngrok -config tunnels -proto=tcp 3000
+./ngrok -config tunnels start http ws
