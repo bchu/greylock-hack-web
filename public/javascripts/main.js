@@ -36,12 +36,14 @@ var frontLight = new THREE.DirectionalLight( 0xffffff, 1 );
 frontLight.position.set( 0, 0, 1 );
 frontLight.castShadow = true;
 frontLight.shadowDarkness = 0.5;
+// frontLight.shadowCameraVisible = true;
 scene.add( frontLight );
 
 var topLight = new THREE.DirectionalLight( 0xffffff, 1 );
 topLight.position.set( 0, 1, 0 );
 topLight.castShadow = true;
 topLight.shadowDarkness = 0.5;
+// topLight.shadowCameraVisible = true;
 scene.add(topLight);
 
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 3000);
@@ -49,6 +51,7 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColorHex(0xffffff, 1);
 renderer.shadowMapEnabled = true;
+renderer.shadowMapSoft = true;
 document.body.appendChild(renderer.domElement);
 var phone;
 var screen;
@@ -60,9 +63,18 @@ loader.load('/models/iphone-model.json', function (geometry, materials) {
   screen = materials[1];
   console.log(screen);
   phone = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial(materials) );
+  phone.castShadow = true;
   phone.overdraw = true;
   scene.add(phone);
 });
+
+
+var plane = new THREE.Mesh(new THREE.PlaneGeometry(300, 1), new THREE.MeshBasicMaterial( { color: 0xffffff } ));
+plane.position.y = -10;
+plane.rotation.z  = -Math.PI / 2;
+plane.receiveShadow = true;
+scene.add(plane);
+
 
 /* Animate rotations */
 var offset = new THREE.Quaternion();
