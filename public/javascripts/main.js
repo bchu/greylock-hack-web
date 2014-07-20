@@ -5,6 +5,15 @@ var zeroOffset = new THREE.Quaternion();
 document.querySelector('.zero').addEventListener('click', function() {
   zeroOffset = phoneProps.quaternion.clone().inverse();
 });
+
+var offset = new THREE.Quaternion();
+offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );
+document.querySelector('.forward').addEventListener('click', function() {
+  offset = new THREE.Quaternion();
+});
+document.querySelector('.back').addEventListener('click', function() {
+  offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );
+});
 var phoneProps = {
   'accelerationX': 0,
   'accelerationY': 0,
@@ -23,7 +32,7 @@ socket.on('update', function(data) {
   phoneProps.accelerationY = data.accelerationY;
   phoneProps.accelerationZ = data.accelerationZ;
   phoneProps.quaternion.set.apply(phoneProps.quaternion, data.quaternion);
-  var delta = utcMilliseconds - data.utcMilliseconds;
+  var delta = data.utcMilliseconds - utcMilliseconds;
   utcMilliseconds = data.utcMilliseconds;
   updatePosition(delta);
 });
@@ -81,7 +90,6 @@ var screen;
 var loader = new THREE.JSONLoader();
 loader.load('/models/iphone-model.json', function (geometry, materials) {
   screen = materials[1];
-  console.log(screen);
   phone = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial(materials) );
   phone.castShadow = true;
   phone.overdraw = true;
@@ -98,7 +106,7 @@ loader.load('/models/iphone-model.json', function (geometry, materials) {
   document.body.appendChild(renderer.domElement);
 });
 
-var tex = THREE.ImageUtils.loadTexture( '/images/geometry2.png') ;
+var tex = THREE.ImageUtils.loadTexture( '/images/halftone.png') ;
 tex.wrapS = THREE.RepeatWrapping;
 tex.wrapT = THREE.RepeatWrapping;
 tex.repeat.x = 1000;
@@ -112,12 +120,11 @@ plane.receiveShadow = true;
 scene.add(plane);
 
 /* Animate rotations */
-var offset = new THREE.Quaternion();
-offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );
 var render = function () { 
   requestAnimationFrame(render);
   if (!phone) { return; }
-  phone.position.set(computedProps.velocityX, computedProps.velocityY, computedProps.velocityZ);
+  // phone.position.set(computedProps.velocityX, computedProps.velocityY, computedProps.velocityZ);
+  phone.position.set(phoneProps.accelerationX * 10, phoneProps.accelerationY * 10, phoneProps.accelerationZ * 10);
   phone.quaternion = offset.clone();
   phone.quaternion.multiplyQuaternions(offset, phoneProps.quaternion);
   phone.quaternion.multiplyQuaternions(phone.quaternion, zeroOffset);
