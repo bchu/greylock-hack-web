@@ -1,17 +1,31 @@
 var socket = io('/');
 
+var utcMilliseconds = new Date().getUTCMilliseconds();
+var zeroOffset = new THREE.Quaternion();
+document.querySelector('.zero').addEventListener('click', function() {
+  zeroOffset = phoneProps.quaternion.clone().inverse();
+});
 var phoneProps = {
-  'rotX': 0,
-  'rotY': 0,
-  'rotZ': 0,
-  'quaternion': [0,0,0,0]
+  'accelerationX': 0,
+  'accelerationY': 0,
+  'accelerationZ': 0,
+  'quaternion': new THREE.Quaternion()
 };
 
-socket.on('update rotation', function(data) {
-  phoneProps.rotX = data.x;
-  phoneProps.rotY = data.y;
-  phoneProps.rotZ = data.z;
-  phoneProps.quaternion = data.quaternion;
+var computedProps = {
+  velocityX: 0,
+  velocityY: 0,
+  velocityZ: 0
+};
+
+socket.on('update', function(data) {
+  phoneProps.accelerationX = data.accelerationX;
+  phoneProps.accelerationY = data.accelerationY;
+  phoneProps.accelerationZ = data.accelerationZ;
+  phoneProps.quaternion.set.apply(phoneProps.quaternion, data.quaternion);
+  var delta = utcMilliseconds - data.utcMilliseconds;
+  utcMilliseconds = data.utcMilliseconds;
+  updatePosition(delta);
 });
 
 
@@ -25,17 +39,11 @@ socket.on('update screencast', function(file){
   };
 });
 
-socket.on('update position', function(data) {
-  console.log(data);
-  /*updatePosition(data.x, data.y, data.z);*/
-});
-
-function updatePosition(x, y, z) {
-  console.log(x, y, z);
-  phone.translateX(x);
-  phone.translateY(y);
-  phone.translateZ(z);
-}
+var updatePosition = function updatePosition(delta) {
+  // computedProps.velocityX += phoneProps.accelerationX * delta;
+  // computedProps.velocityY += phoneProps.accelerationY * delta;
+  // computedProps.velocityZ += phoneProps.accelerationZ * delta;
+};
 
 
 /* Initialize scene */
@@ -90,12 +98,16 @@ loader.load('/models/iphone-model.json', function (geometry, materials) {
   document.body.appendChild(renderer.domElement);
 });
 
-var planeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
-planeMaterial.ambient = planeMaterial.color;
-var plane = new THREE.Mesh(new THREE.PlaneGeometry(1500, 1500), planeMaterial);
+var tex = THREE.ImageUtils.loadTexture( '/images/geometry2.png') ;
+tex.wrapS = THREE.RepeatWrapping;
+tex.wrapT = THREE.RepeatWrapping;
+tex.repeat.x = 1000;
+tex.repeat.y = 1000;
+var floorMaterial = new THREE.MeshBasicMaterial( { map: tex, side: THREE.DoubleSide } );
+var plane = new THREE.Mesh(new THREE.PlaneGeometry(1500, 1500), floorMaterial);
 plane.rotation.x  = -Math.PI / 2;
 plane.position.set(0, -800, 500);
-plane.scale.set(100,100,100);
+plane.scale.set(100,1000,1000);
 plane.receiveShadow = true;
 scene.add(plane);
 
@@ -105,9 +117,10 @@ offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );
 var render = function () { 
   requestAnimationFrame(render);
   if (!phone) { return; }
-  var arr = phoneProps.quaternion;
-  phone.quaternion.set(arr[0], arr[1], arr[2], arr[3]);
-  phone.quaternion.multiplyQuaternions(offset, phone.quaternion);
+  phone.position.set(computedProps.velocityX, computedProps.velocityY, computedProps.velocityZ);
+  phone.quaternion = offset.clone();
+  phone.quaternion.multiplyQuaternions(offset, phoneProps.quaternion);
+  phone.quaternion.multiplyQuaternions(phone.quaternion, zeroOffset);
   renderer.render(scene, camera);
 };
 render();
