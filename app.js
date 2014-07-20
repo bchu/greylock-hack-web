@@ -11,8 +11,9 @@ var routes = require('./routes/index');
 var socketServer = require('./lib/socket-server');
 
 var app = express();
-var server = http.Server(app).listen('3000', '127.0.0.1');
-socketServer.listen(server);
+var port = (app.get('env') === 'development') ? 3000 : 80;
+var server = http.Server(app).listen(port, '127.0.0.1');
+socketServer.listen(server, port);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -59,6 +60,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;

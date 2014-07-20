@@ -5,7 +5,7 @@ var router = express.Router();
 /* Update iphone animation */
 router.post('/update', function(req, res) {
   socketServer.updateAnimation(req.body.quaternion); 
-  console.log(req.body.accelerationX, req.body.accelerationY, req.body.accelerationZ);
+  // console.log(req.body.accelerationX, req.body.accelerationY, req.body.accelerationZ);
   socketServer.updatePosition(req.body.accelerationX, 
                               req.body.accelerationY, 
                               req.body.accelerationZ); 
@@ -32,7 +32,8 @@ router.post('/screencast', function(req, res) {
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
+  res.render('index');
+  res.end();
 });
 
 module.exports = router;
