@@ -44,7 +44,7 @@ var render = function () {
   if (!phone) { return; }
   var arr = phoneProps.quaternion;
   phone.quaternion.set(arr[0], arr[1], arr[2], arr[3]);
-  phone.quaternion.multiply(offset);
+  phone.quaternion.multiplyQuaternions(offset, phone.quaternion);
   renderer.render(scene, camera);
 };
 render();
