@@ -15,19 +15,29 @@ socket.on('update rotation', function(data) {
 });
 
 var counter = 0;
+
 socket.on('update screencast', function(file){
+  var imageBlob = new Blob([file], {type: 'image/jpeg'});
+  var image = new Image(320, 568);
+  image.src = URL.createObjectURL(imageBlob);
   if (counter <= 0) {
-    console.log(file.byteLength);
-    var imageBlob = new Blob([file], {type: 'image/jpeg'});
-    var image = new Image();
-    image.src = URL.createObjectURL(imageBlob);
-    document.body.appendChild(image);
+    var canvas = document.createElement('canvas');
+    canvas.width = 328;
+    canvas.height = 568;
+    var ctx = canvas.getContext('2d');
+    image.onload = function() {
+      ctx.drawImage(image, 0, 0);
+      document.body.appendChild(canvas);
+      screen.map = new THREE.Texture(canvas);
+      screen.map.needsUpdate = true;
+    }
     counter++;
   }
+  //screen.map = new THREE.Texture(THREE.ImageUtils.getNormalMap(image));
 });
 
+/* Initialize scene */
 var scene = new THREE.Scene();
-
 var ambient = new THREE.AmbientLight( 0x404040 );
 scene.add( ambient );
 var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
@@ -43,17 +53,20 @@ renderer.setClearColorHex(0xffffff, 1);
 renderer.shadowMapEnabled = true;
 document.body.appendChild(renderer.domElement);
 var phone;
+var screen;
 camera.position.z = 1000;
 
+/* Load iphone model */
 var loader = new THREE.JSONLoader();
 loader.load('/models/iphone-model.json', function (geometry, materials) {
+  screen = materials[1]
+  console.log(screen);
   phone = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial(materials) );
   phone.overdraw = true;
   scene.add(phone);
 });
 
-canvas = document.createElement('canvas');
-
+/* Animate rotations */
 var offset = new THREE.Quaternion();
 offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );
 var render = function () { 
@@ -66,8 +79,11 @@ var render = function () {
 };
 render();
 
+/* Add screencasting */
+canvas = document.createElement('canvas');
 
 
+/* Resize with window */
 window.addEventListener('resize', function() {
   var WIDTH = window.innerWidth,
       HEIGHT = window.innerHeight;
