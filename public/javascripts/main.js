@@ -94,31 +94,28 @@ socket.on('update', function(data) {
 
   if (loosenCamera) {
     var vector = new THREE.Vector3(phoneProps.accelerationX, phoneProps.accelerationY, phoneProps.accelerationZ).negate();
-    // var x = vector.clone().projectOnVector(new THREE.Vector3(1,0,0)).x;
-    // var y = vector.clone().projectOnVector(new THREE.Vector3(0,1,0)).y;
-    // var z = vector.clone().projectOnVector(new THREE.Vector3(0,0,1)).z;
     var x = vector.x;
     var y = vector.y;
     var z = vector.z;
     // console.log('x', x);
     // console.log('y', y);
-    if (Math.abs(x) > 1) {
+    if (Math.abs(x) > 0.9) {
       // console.log('x');
-      prevX += 5 * x;
+      prevX += 7 * x;
     }
     else {
       prevX += (origX - prevX) / 8;
     }
-    if (Math.abs(y) > 1) {
+    if (Math.abs(y) > 0.9) {
       // console.log('y');
-      prevY += 5 * y;
+      prevY += 7 * y;
     }
     else {
       prevY += (origY - prevY) / 8;
     }
     if (Math.abs(z) > 1.5) {
       // console.log('z');
-      prevZ += -5 * z;
+      prevZ += -6 * z;
     }
     else {
       prevZ += (origZ - prevZ) / 8;
