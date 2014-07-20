@@ -18,6 +18,9 @@ var loosenCamera = false;
 document.querySelector('.loosen').addEventListener('click', function() {
   loosenCamera = !loosenCamera;
 });
+document.querySelector('.tilt').addEventListener('click', function() {
+  offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 4 );
+});
 var phoneProps = {
   'accelerationX': 0,
   'accelerationY': 0,
@@ -99,15 +102,15 @@ socket.on('update', function(data) {
     // console.log('x', x);
     // console.log('y', y);
     if (Math.abs(x) > 1) {
-      console.log('x');
+      // console.log('x');
       prevX += 5 * x;
     }
     if (Math.abs(y) > 1) {
-      console.log('y');
+      // console.log('y');
       prevY += 5 * y;
     }
     if (Math.abs(z) > 1.5) {
-      console.log('z');
+      // console.log('z');
       prevZ += 5 * z;
     }
     prevX = Math.max(-500, Math.min(500, prevX));
