@@ -33,14 +33,18 @@ camera.position.z = 1000;
 var loader = new THREE.JSONLoader();
 loader.load('/models/iphone-model.json', function (geometry, materials) {
   phone = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial(materials) );
-  // phone.overdraw = true;
+  phone.overdraw = true;
   scene.add(phone);
 });
 
+var offset = new THREE.Quaternion();
+offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );
 var render = function () { 
   requestAnimationFrame(render);
   if (!phone) { return; }
-  phone.quaternion.set.apply(phone.quaternion, phoneProps.quaternion);
+  var arr = phoneProps.quaternion;
+  phone.quaternion.set(arr[0], arr[1], arr[2], arr[3]);
+  phone.quaternion.multiply(offset);
   renderer.render(scene, camera);
 };
 render();
