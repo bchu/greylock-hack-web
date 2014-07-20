@@ -15,31 +15,42 @@ socket.on('update rotation', function(data) {
 });
 
 var scene = new THREE.Scene();
-// var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 2000, 1000);
+
+var ambient = new THREE.AmbientLight( 0x101010 );
+scene.add( ambient );
+var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+directionalLight.position.set( 0.5, 2, 1 ).normalize();
+scene.add( directionalLight );
+
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 3000);
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColorHex(0xffffff, 1);
 document.body.appendChild(renderer.domElement);
-var geometry = new THREE.BoxGeometry(2.31, 4.87, 0.30);
-var material = new THREE.MeshBasicMaterial({color: 0x000000});
-var phone = new THREE.Mesh(geometry, material);
-// scene.add(phone);
-// camera.position.z = 5;
-camera.position.z = 1200;
+var phone;
+camera.position.z = 1000;
 
 var loader = new THREE.JSONLoader();
 loader.load('/models/iphone-model.json', function (geometry, materials) {
-  // create a mesh with models geometry and material
-  phone = THREE.SceneUtils.createMultiMaterialObject( geometry, materials );
-  console.log(materials);
-  console.log('loaded model');
+  phone = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial(materials) );
+  // phone.overdraw = true;
   scene.add(phone);
 });
 
-var render = function () {
+var render = function () { 
   requestAnimationFrame(render);
+  if (!phone) { return; }
   phone.quaternion.set.apply(phone.quaternion, phoneProps.quaternion);
   renderer.render(scene, camera);
 };
 render();
+
+
+
+window.addEventListener('resize', function() {
+  var WIDTH = window.innerWidth,
+      HEIGHT = window.innerHeight;
+  renderer.setSize(WIDTH, HEIGHT);
+  camera.aspect = WIDTH / HEIGHT;
+  camera.updateProjectionMatrix();
+});
