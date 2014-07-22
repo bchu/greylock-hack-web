@@ -14,7 +14,7 @@ var app = express();
 var port = process.env.PORT || 3000;
 console.log('Connect on port: ', port);
 var server = http.Server(app).listen(port, '127.0.0.1');
-socketServer.listen(server, port);
+socketServer.listen(server);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
