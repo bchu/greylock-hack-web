@@ -1,26 +1,39 @@
 var socket = io('/');
 
-var utcMilliseconds = new Date().getUTCMilliseconds();
+// Controls and Events
+
 var zeroOffset = new THREE.Quaternion();
 document.querySelector('.zero').addEventListener('click', function() {
   zeroOffset = phoneProps.quaternion.clone().inverse();
 });
 
-var offset = new THREE.Quaternion();
-offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );
+var manualOffset = new THREE.Quaternion();
+manualOffset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );
 document.querySelector('.forward').addEventListener('click', function() {
-  offset = new THREE.Quaternion();
+  manualOffset = new THREE.Quaternion();
 });
 document.querySelector('.back').addEventListener('click', function() {
-  offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );
+  manualOffset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 2 );
 });
 var loosenCamera = false;
 document.querySelector('.loosen').addEventListener('click', function() {
   loosenCamera = !loosenCamera;
 });
 document.querySelector('.tilt').addEventListener('click', function() {
-  offset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 4 );
+  manualOffset.setFromAxisAngle( new THREE.Vector3( -1, 0, 0 ), Math.PI / 4 );
 });
+
+window.addEventListener('resize', function() {
+  var WIDTH = window.innerWidth,
+      HEIGHT = window.innerHeight;
+  renderer.setSize(WIDTH, HEIGHT);
+  camera.aspect = WIDTH / HEIGHT;
+  camera.updateProjectionMatrix();
+});
+
+
+// Data
+
 var phoneProps = {
   'accelerationX': 0,
   'accelerationY': 0,
@@ -34,35 +47,15 @@ var computedProps = {
   velocityZ: 0
 };
 
-/* Initialize scene */
 var scene = new THREE.Scene();
-// var scene = new Physijs.Scene();
-// scene.setGravity(new THREE.Vector3(0,0,0));
-// scene.addEventListener('update', function() {
-//     var vector = new THREE.Vector3(phoneProps.accelerationX, phoneProps.accelerationY, phoneProps.accelerationZ);
-//     console.log(vector.length());
-//     if (vector && vector.length() > 10) {
-//       applyForce(phone, vector);
-//     }
-//     scene.simulate( undefined, 1 );
-// });
-// var applyForce = function(item, vector) {
-//   var strength = 100, distance, effect, offset;
-//   effect = vector.clone().sub( item.position ).normalize().multiplyScalar( strength ).negate(),
-//   offset = vector.clone().sub( item.position );
-//   item.applyImpulse( effect, offset );
-// };
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 3000);
-// camera.position.set(0,800,1300);
 camera.position.set(0,0, 1300);
-// camera.rotation.x = -Math.PI/6;
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColorHex(0xffffff, 1);
 renderer.shadowMapEnabled = true;
 renderer.shadowMapSoft = true;
-var phone;
-var screen;
+
 
 var Matrix4 = THREE.Matrix4;
 var rotationY = new Matrix4();
@@ -80,12 +73,6 @@ var setCameraSphere = function(longitude, latitude, radius) {
   camera.applyMatrix(matrix);
 };
 
-var origX = 0, origY = 0, origZ = 1300;
-var prevX = 0;
-var prevY = 0;//Math.PI/18;
-var prevZ = 1300;
-// setCameraSphere(prevX, prevY, 1300);
-
 
 socket.on('update', function(data) {
   phoneProps.accelerationX = data.accelerationX;
@@ -93,45 +80,46 @@ socket.on('update', function(data) {
   phoneProps.accelerationZ = data.accelerationZ;
 
   if (loosenCamera) {
-    var vector = new THREE.Vector3(phoneProps.accelerationX, phoneProps.accelerationY, phoneProps.accelerationZ).negate();
-    var x = vector.x;
-    var y = vector.y;
-    var z = vector.z;
-    // console.log('x', x);
-    // console.log('y', y);
-    if (Math.abs(x) > 0.9) {
-      // console.log('x');
-      prevX += 7 * x;
-    }
-    else {
-      prevX += (origX - prevX) / 8;
-    }
-    if (Math.abs(y) > 0.9) {
-      // console.log('y');
-      prevY += 7 * y;
-    }
-    else {
-      prevY += (origY - prevY) / 8;
-    }
-    if (Math.abs(z) > 1.5) {
-      // console.log('z');
-      prevZ += -6 * z;
-    }
-    else {
-      prevZ += (origZ - prevZ) / 8;
-    }
-    prevX = Math.max(-500, Math.min(500, prevX));
-    prevY = Math.max(-500, Math.min(500, prevY));
-    prevZ = Math.max(0, Math.min(2000, prevZ));
-    // setCameraSphere(prevX, prevY, 1300);
-    camera.position.set(prevX, prevY, prevZ);
+    loosenCameraHandler();
   }
 
   phoneProps.quaternion.set.apply(phoneProps.quaternion, data.quaternion);
-  var delta = data.utcMilliseconds - utcMilliseconds;
-  utcMilliseconds = data.utcMilliseconds;
-  updatePosition(delta);
 });
+
+
+var origX = 0, origY = 0, origZ = 1300;
+var prevX = 0;
+var prevY = 0;
+var prevZ = 1300;
+var loosenCameraHandler = function() {
+  var vector = new THREE.Vector3(phoneProps.accelerationX, phoneProps.accelerationY, phoneProps.accelerationZ).negate();
+  var x = vector.x;
+  var y = vector.y;
+  var z = vector.z;
+  if (Math.abs(x) > 0.9) {
+    prevX += 7 * x;
+  }
+  else {
+    prevX += (origX - prevX) / 8;
+  }
+  if (Math.abs(y) > 0.9) {
+    prevY += 7 * y;
+  }
+  else {
+    prevY += (origY - prevY) / 8;
+  }
+  if (Math.abs(z) > 1.5) {
+    prevZ += -6 * z;
+  }
+  else {
+    prevZ += (origZ - prevZ) / 8;
+  }
+  prevX = Math.max(-500, Math.min(500, prevX));
+  prevY = Math.max(-500, Math.min(500, prevY));
+  prevZ = Math.max(0, Math.min(2000, prevZ));
+  camera.position.set(prevX, prevY, prevZ);
+};
+
 
 
 socket.on('update screencast', function(file){
@@ -144,15 +132,7 @@ socket.on('update screencast', function(file){
   };
 });
 
-// Physijs.scripts.worker = '/javascripts/physijs_worker.js';
-// Physijs.scripts.ammo = '/javascripts/ammo.js';
-
-var updatePosition = function updatePosition(delta) {
-  // computedProps.velocityX += phoneProps.accelerationX * delta;
-  // computedProps.velocityY += phoneProps.accelerationY * delta;
-  // computedProps.velocityZ += phoneProps.accelerationZ * delta;
-};
-
+// Lighting
 
 var ambient = new THREE.AmbientLight( 0x404040 );
 scene.add( ambient );
@@ -160,34 +140,23 @@ var frontLight = new THREE.DirectionalLight( 0xffffff, 1 );
 frontLight.position.set( 0, 0, 800 );
 frontLight.castShadow = true;
 frontLight.shadowDarkness = 0.5;
-// frontLight.shadowCameraVisible = true;
 scene.add( frontLight );
 
 var topLight = new THREE.DirectionalLight( 0xffffff, 1 );
 topLight.position.set( 0, 1000, 0 );
 topLight.castShadow = true;
 topLight.shadowDarkness = 0.5;
-// topLight.shadowCameraVisible = true;
 scene.add(topLight);
 
-
-/* Load iphone model */
+var phone;
+var screen;
 var loader = new THREE.JSONLoader();
 loader.load('/models/iphone-model.json', function (geometry, materials) {
   screen = materials[1];
-  // phone = new Physijs.BoxMesh( geometry, new THREE.MeshFaceMaterial(materials) );
   phone = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial(materials) );
   phone.castShadow = true;
   phone.overdraw = true;
   scene.add(phone);
-
-  /*var dir = new THREE.Vector3( 1, 0, 0 );
-  var origin = new THREE.Vector3( 0, 0, 500 );
-  var length = 300;
-  var hex = 0xffff00;
-
-  var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex, 75, 50);
-  scene.add( arrowHelper );*/
 
   document.body.appendChild(renderer.domElement);
 });
@@ -206,24 +175,13 @@ plane.receiveShadow = true;
 scene.add(plane);
 
 /* Animate rotations */
-var render = function () { 
+var render = function () {
   requestAnimationFrame(render);
   if (!phone) { return; }
-  // phone.position.set(computedProps.velocityX, computedProps.velocityY, computedProps.velocityZ);
-  // phone.position.set(phoneProps.accelerationX * 10, phoneProps.accelerationY * 10, phoneProps.accelerationZ * 10);
-  phone.quaternion = offset.clone();
-  phone.quaternion.multiplyQuaternions(offset, phoneProps.quaternion);
+  phone.quaternion = manualOffset.clone();
+  phone.quaternion.multiplyQuaternions(manualOffset, phoneProps.quaternion);
   phone.quaternion.multiplyQuaternions(phone.quaternion, zeroOffset);
-  // scene.simulate();
   renderer.render(scene, camera);
 };
 render();
 
-/* Resize with window */
-window.addEventListener('resize', function() {
-  var WIDTH = window.innerWidth,
-      HEIGHT = window.innerHeight;
-  renderer.setSize(WIDTH, HEIGHT);
-  camera.aspect = WIDTH / HEIGHT;
-  camera.updateProjectionMatrix();
-});

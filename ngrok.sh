@@ -1,1 +1,1 @@
-./ngrok -config tunnels start http ws
+./ngrok -config tunnels start http

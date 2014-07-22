@@ -1,8 +1,6 @@
 auth_token: WeKSBk2pWActkLrAhadI
 tunnels:
   http:
+    subdomain: "sdgflsdflg"
     proto:
-      tcp: 3000
-  ws:
-    proto:
-      tcp: 2000
+      http: 3000

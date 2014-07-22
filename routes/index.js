@@ -5,7 +5,6 @@ var router = express.Router();
 /* Update iphone animation */
 router.post('/update', function(req, res) {
   socketServer.updateAnimation(req.body); 
-  // console.log(req.body.accelerationX, req.body.accelerationY, req.body.accelerationZ);
   res.end();
 });
 
