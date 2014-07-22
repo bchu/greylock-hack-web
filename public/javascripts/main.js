@@ -52,7 +52,7 @@ var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeigh
 camera.position.set(0,0, 1300);
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColorHex(0xffffff, 1);
+renderer.setClearColor(0xffffff, 1);
 renderer.shadowMapEnabled = true;
 renderer.shadowMapSoft = true;
 
