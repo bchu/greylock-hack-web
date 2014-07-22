@@ -13,7 +13,7 @@ var socketServer = require('./lib/socket-server');
 var app = express();
 var port = process.env.PORT || 3000;
 console.log('Connect on port: ', port);
-var server = http.Server(app).listen(port, '127.0.0.1');
+var server = http.Server(app).listen(port);
 socketServer.listen(server);
 
 // view engine setup
