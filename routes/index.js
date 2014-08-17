@@ -1,7 +1,9 @@
 var express = require('express');
-var socketServer = require('./../lib/socket-server');
-var router = express.Router();
 
+var router = express.Router();
+module.exports = router;
+
+var socketServer = require('./../lib/socket-server');
 /* Update iphone animation */
 router.post('/update', function(req, res) {
   socketServer.updateAnimation(req.body); 
@@ -32,4 +34,8 @@ router.get('/', function(req, res) {
   res.end();
 });
 
-module.exports = router;
+router.get('/video', function(req, res) {
+  res.render('video');
+  res.end();
+});
+

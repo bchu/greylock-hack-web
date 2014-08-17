@@ -1,12 +1,11 @@
 var http = require('http');
 var express = require('express');
 var path = require('path');
-var favicon = require('static-favicon');
+// var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
-
 var routes = require('./routes/index');
 var socketServer = require('./lib/socket-server');
 
@@ -20,7 +19,7 @@ socketServer.listen(server);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(favicon());
+// app.use(favicon());
 app.use(logger('dev'));
 app.use(busboy());
 app.use(bodyParser.json());

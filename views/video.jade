@@ -1,0 +1,12 @@
+html
+  head
+    title i3D
+    style
+      | .video-container { position: relative; width: 640; height: 1136; }
+      | video { position: absolute; top: 0; left: 0; width: 640; height: 1136;}
+  body
+    div.video-container
+      video.first(autoplay)
+      video.second(autoplay)
+    script(src='/socket.io/socket.io.js')
+    script(src='/javascripts/video.js')
