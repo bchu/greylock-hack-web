@@ -9,6 +9,11 @@ html
     button.tilt Set on Tilt
     button.forward Face Forward
     button.loosen Loosen Camera
+    div.video-container(style='display:none')
+      video.first(autoplay)
+      video.second(autoplay)
     script(src='/javascripts/three.js')
     script(src='/socket.io/socket.io.js')
+    script(src='/javascripts/video.js')
     script(src='/javascripts/main.js')
+

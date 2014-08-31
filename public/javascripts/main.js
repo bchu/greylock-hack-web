@@ -127,8 +127,8 @@ socket.on('update screencast', function(file){
   var image = new Image(320, 568);
   image.src = URL.createObjectURL(imageBlob);
   image.onload = function() {
-    screen.map = new THREE.Texture(image);
-    screen.map.needsUpdate = true;
+    screenMat.map = new THREE.Texture(image);
+    screenMat.map.needsUpdate = true;
   };
 });
 
@@ -149,14 +149,18 @@ topLight.shadowDarkness = 0.5;
 scene.add(topLight);
 
 var phone;
-var screen;
+var screenMat;
 var loader = new THREE.JSONLoader();
 loader.load('/models/iphone-model.json', function (geometry, materials) {
-  screen = materials[1];
+  screenMat = materials[1];
   phone = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial(materials) );
   phone.castShadow = true;
   phone.overdraw = true;
   scene.add(phone);
+
+  var evt = new Event('readyToAddVideo');
+  evt.material = screenMat;
+  window.dispatchEvent(evt);
 
   document.body.appendChild(renderer.domElement);
 });
@@ -177,6 +181,9 @@ scene.add(plane);
 /* Animate rotations */
 var render = function () {
   requestAnimationFrame(render);
+  if (screenMat && screenMat.map.image && screenMat.map.image.readyState === screenMat.map.image.HAVE_ENOUGH_DATA ) {
+    screenMat.map.needsUpdate = true;
+  }
   if (!phone) { return; }
   phone.quaternion = manualOffset.clone();
   phone.quaternion.multiplyQuaternions(manualOffset, phoneProps.quaternion);
