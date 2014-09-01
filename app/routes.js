@@ -16,7 +16,7 @@ router.post('/update', function(req, res) {
 // video update fallback:
 router.post('/video', function(req, res) {
   req.pipe(req.busboy);
-  var data ;
+  var data;
   req.busboy.on('file', function (fieldname, filestream, filename) {
     filestream.on('data', function(chunk) {
       if (!data) { data = chunk; }
@@ -24,9 +24,8 @@ router.post('/video', function(req, res) {
         data = Buffer.concat([data, chunk]);
       }
     });
-
     filestream.on('end', function() {
-      // todo: implement video fallback
+      socketServer.updateVideo(data);
     });
   });
   res.end();

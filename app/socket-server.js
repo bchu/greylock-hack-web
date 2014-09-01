@@ -58,7 +58,7 @@ exports.updateAnimation = _.throttle(function(body){
     'accelerationX': body.accelerationX * 9.81,
     'accelerationY': body.accelerationY * 9.81,
     'accelerationZ': body.accelerationZ * 9.81,
-    'utcMilliseconds': new Date().getUTCMilliseconds()
+    // 'utcMilliseconds': new Date().getUTCMilliseconds()
   };
   io.sockets.emit('update', data); 
 }, 16);
