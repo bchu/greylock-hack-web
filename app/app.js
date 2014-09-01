@@ -3,12 +3,17 @@ var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 var app = express();
+module.exports = app;
 
 var socketServer = require('./socket-server');
 var port = process.env.PORT || 3000;
 console.log('Connect on port: ', port);
 var server = http.Server(app).listen(port);
 socketServer.listen(server);
+
+// parsing
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());
 
 // view engine setup
 var routes = require('./routes');
@@ -50,4 +55,3 @@ app.use(function(err, req, res, next) {
     });
 });
 
-module.exports = app;
