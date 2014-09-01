@@ -1,11 +1,10 @@
 var socketio = require('socket.io');
-// var Primus = require('primus')
 var WebSocketServer = require('ws').Server;
-var app = require('../app');
+var app = require('./app');
 var _ = require('lodash');
 var io;
 var video = require('./video');
-var router = require('../routes/index');
+var router = require('./routes');
 
 var videos = {};
 var videoCount = 0;
