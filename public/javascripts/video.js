@@ -26,9 +26,13 @@ window.addEventListener('readyToAddVideo', function(e) {
   activeVideo.addEventListener('playing', swapListener);
 
   socket.on('update video', function(data) {
-    console.log('video now on', data);
+    var videoBlob = new Blob([data], {type: 'video/mp4'});
+    var url = URL.createObjectURL(videoBlob);
+    console.log('video updated');
 
+    var oldURL = loadingVideo.src;
+    URL.revokeObjectURL(oldURL); // reclaim memory
     loadingVideo.pause();
-    loadingVideo.setAttribute('src', '/video/' + data); // this triggers the 'playing' event after video is loaded
+    loadingVideo.src = url; // this triggers the 'playing' event after video is loaded
   });
 });

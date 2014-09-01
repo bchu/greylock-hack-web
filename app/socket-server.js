@@ -47,7 +47,7 @@ exports.updateVideo = _.throttle(function(videoData) {
   delete videos[videoCount-6]; // remove old video cache
   videos[videoCount] = videoData;
   console.log('video is now on number', videoCount);
-  io.sockets.emit('update video', videoCount);
+  io.sockets.emit('update video', videoData);
   videoCount++;
 }, 16);
 

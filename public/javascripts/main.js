@@ -120,18 +120,6 @@ var loosenCameraHandler = function() {
   camera.position.set(prevX, prevY, prevZ);
 };
 
-
-
-socket.on('update screencast', function(file){
-  var imageBlob = new Blob([file], {type: 'image/jpeg'});
-  var image = new Image(320, 568);
-  image.src = URL.createObjectURL(imageBlob);
-  image.onload = function() {
-    screenMat.map = new THREE.Texture(image);
-    screenMat.map.needsUpdate = true;
-  };
-});
-
 // Lighting
 
 var ambient = new THREE.AmbientLight( 0x404040 );
