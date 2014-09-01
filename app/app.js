@@ -12,10 +12,10 @@ socketServer.listen(server);
 
 // view engine setup
 var routes = require('./routes');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', 'jade');
 app.use(logger('dev'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 app.use('/', routes);
 
 /// catch 404 and forward to error handler
