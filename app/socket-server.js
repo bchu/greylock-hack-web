@@ -3,12 +3,10 @@ var WebSocketServer = require('ws').Server;
 var app = require('./app');
 var _ = require('lodash');
 var io;
-var video = require('./video');
-var router = require('./routes');
 
+var router = require('./routes');
 var videos = {};
 var videoCount = 0;
-
 router.get('/video/:path', function(req, res) {
   res.set('Content-Type', 'video/mp4');
   res.send(videos[req.params.path]);
@@ -16,32 +14,55 @@ router.get('/video/:path', function(req, res) {
 });
 
 exports.listen = function(server) {
-  io = socketio(server, {
-    destroyUpgrade: false
-  });
+  io = socketio(server, { destroyUpgrade: false }); // this is the key to getting ws to work with socket.io
   io.sockets.on('connection', function (socket) {
-    console.log('socket.io connection!');
+    console.log('socket.io connection to browser');
   });
   setupPhoneWebSocket(server);
 };
 
+var setupPhoneWebSocket = function(server) {
+  var wss = new WebSocketServer({server: server, path: '/socket'});
+  wss.on('connection', function(ws) {
+    console.log('ws connection from iPhone');
+    // reset:
+    videos = {};
+    videoCount = 0;
+    ws.on('message', function(message, flags) {
+      // motion/gyro data:
+      if (!flags.binary) {
+        var motionData = JSON.parse(message);
+        if (motionData.quaternion) {
+          exports.updateAnimation(motionData);
+        }
+      }
+      // video data:
+      else {
+        // message is a buffer instance:
+        delete videos[videoCount-6]; // remove old video cache
+        videos[videoCount] = message;
+        console.log('video is now on number', videoCount);
+        io.sockets.emit('update video', videoCount);
+        videoCount++;
+      }
+    });
+  });
+};
+
+// only run every 16 ms (60fps)
 exports.updateAnimation = _.throttle(function(body){
   var data = {
     'quaternion': body.quaternion,
-    'accelerationX':body.accelerationX * 9.81,
-    'accelerationY':body.accelerationY * 9.81,
-    'accelerationZ':body.accelerationZ * 9.81,
+    'accelerationX': body.accelerationX * 9.81,
+    'accelerationY': body.accelerationY * 9.81,
+    'accelerationZ': body.accelerationZ * 9.81,
     'utcMilliseconds': new Date().getUTCMilliseconds()
   };
   io.sockets.emit('update', data); 
 }, 16);
 
-exports.updateScreencast = _.throttle(function(file){
-  io.sockets.emit('update screencast', file);
-}, 16);
-
+// experimental work on acceleration:
 exports.updatePosition = getUpdatePosition(); 
-
 function getUpdatePosition(){
   var lastCalled = 0;
   function updatePosition (accelX, accelY, accelZ) {
@@ -58,36 +79,6 @@ function getUpdatePosition(){
   }
   return updatePosition;
 }
-
-
-var setupPhoneWebSocket = function(server) {
-  var wss = new WebSocketServer({server: server, path: '/socket'});
-  wss.on('connection', function(ws) {
-    console.log('ws connection (from iPhone)!');
-    videos = {};
-    videoCount = 0;
-      ws.on('message', function(message, flags) {
-          if (!flags.binary) {
-            var data = JSON.parse(message);
-            if (data.quaternion) {
-              exports.updateAnimation(data);
-            }
-          }
-          else {
-            // video.handleVideo(message);
-            // message is a buffer instance:
-            delete videos[videoCount-6];
-            videos[videoCount] = message;
-            console.log('file is now on', videoCount);
-            // exports.handleVideo(message);
-            io.sockets.emit('update video', videoCount);
-            videoCount++;
-            // exports.updateScreencast(message);
-          }
-      });
-  });
-};
-
 
 // var ffmpeg = require('fluent-ffmpeg');
 

@@ -2,23 +2,20 @@ var http = require('http');
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
-
-var routes = require('./routes');
-var socketServer = require('./socket-server');
-
 var app = express();
+
+var socketServer = require('./socket-server');
 var port = process.env.PORT || 3000;
 console.log('Connect on port: ', port);
 var server = http.Server(app).listen(port);
 socketServer.listen(server);
 
 // view engine setup
+var routes = require('./routes');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use('/', routes);
 
 /// catch 404 and forward to error handler
