@@ -7,11 +7,6 @@ var io;
 var router = require('./routes');
 var videos = {};
 var videoCount = 0;
-router.get('/video/:path', function(req, res) {
-  res.set('Content-Type', 'video/mp4');
-  res.send(videos[req.params.path]);
-  res.end();
-});
 
 exports.listen = function(server) {
   io = socketio(server, { destroyUpgrade: false }); // this is the key to getting ws to work with socket.io
