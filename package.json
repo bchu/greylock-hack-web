@@ -6,8 +6,6 @@
     "start": "node app.js"
   },
   "dependencies": {
-    "body-parser": "~1.0.0",
-    "connect-busboy": "~0.0.1",
     "debug": "~0.7.4",
     "express": "~4.2.0",
     "fluent-ffmpeg": "^2.0.0-rc1",
