@@ -32,22 +32,24 @@ var setupPhoneWebSocket = function(server) {
       // motion/gyro data:
       if (!flags.binary) {
         var motionData = JSON.parse(message);
-        if (motionData.quaternion) {
-          exports.updateAnimation(motionData);
-        }
+        exports.updateAnimation(motionData);
       }
       // video data:
       else {
-        // message is a buffer instance:
-        delete videos[videoCount-6]; // remove old video cache
-        videos[videoCount] = message;
-        console.log('video is now on number', videoCount);
-        io.sockets.emit('update video', videoCount);
-        videoCount++;
+        exports.updateVideo(message);
       }
     });
   });
 };
+
+exports.updateVideo = _.throttle(function(videoData) {
+  // message is a buffer instance:
+  delete videos[videoCount-6]; // remove old video cache
+  videos[videoCount] = videoData;
+  console.log('video is now on number', videoCount);
+  io.sockets.emit('update video', videoCount);
+  videoCount++;
+}, 16);
 
 // only run every 16 ms (60fps)
 exports.updateAnimation = _.throttle(function(body){
