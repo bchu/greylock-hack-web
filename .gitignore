@@ -1,6 +1,5 @@
 node_modules/*
 *.swp
-model/*
 alternate-model/*
 convert_obj_three.py
 npm-debug.log
